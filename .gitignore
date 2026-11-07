@@ -6,3 +6,4 @@ __pycache__/
 # The original cloud server + client sources stay sealed until the reveal commit.
 sealed/
 runs/tmp/
+runs/
