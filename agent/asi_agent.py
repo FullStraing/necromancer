@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 load_dotenv(ROOT / ".env")
 
 from agent.cards import REPO, card_message, case_file, result_card, text_message  # noqa: E402
+from agent.intents import parse_intent  # noqa: E402
 from necromancer.evidence import load_manual, load_traffic, sessions  # noqa: E402
 from necromancer.oracle import dead_cloud_check  # noqa: E402
 from necromancer.pipeline import Report, resurrect  # noqa: E402
@@ -40,29 +41,6 @@ agent = Agent(
 chat = Protocol(spec=chat_protocol_spec)
 REPORTS: dict[str, Report] = {}
 BUSY: set[str] = set()
-
-INTENTS = {
-    "resurrect": ("resurrect", "revive", "rebuild", "fix", "run", "bring", "start", "go"),
-    "evidence": ("evidence", "traffic", "packets", "what do you have"),
-    "journal": ("journal", "proof", "prove", "hypothes"),
-    "lies": ("lie", "manual", "doc", "contradict"),
-    "code": ("code", "server", "source", "download"),
-}
-
-
-def parse_intent(text: str) -> str:
-    try:
-        sel = json.loads(text)
-        if isinstance(sel, dict) and sel.get("action") in INTENTS:
-            return sel["action"]
-    except (ValueError, TypeError):
-        pass
-    low = text.lower()
-    for intent in ("journal", "lies", "code", "evidence", "resurrect"):
-        if any(k in low for k in INTENTS[intent]):
-            return intent
-    return "hello"
-
 
 async def send_case_file(ctx: Context, sender: str) -> None:
     packets = load_traffic()
