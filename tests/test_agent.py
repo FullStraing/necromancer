@@ -15,6 +15,9 @@ from agent.intents import parse_intent
     ("give me the server code", "code"),
     ("hi", "hello"),
     ('{"action": "rm -rf"}', "hello"),
+    ('@agent1qfnad6aftace8zyl0hh3xhzjh5m23hqlyl3mc9sgynz7644vttrc54n3csh {"action":"resurrect"}', "resurrect"),
+    ('@agent1qfnad6aftace8zyl0hh3xhzjh5m23hqlyl3mc9sgynz7644vttrc54n3csh {"action":"journal"} proof', "journal"),
+    ("The user clicked 'Resurrect the cloud' on the case file about the manual", "resurrect"),
 ])
 def test_parse_intent(text, intent):
     assert parse_intent(text) == intent

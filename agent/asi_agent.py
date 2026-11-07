@@ -111,7 +111,7 @@ async def on_message(ctx: Context, sender: str, msg: ChatMessage) -> None:
     await ctx.send(sender, ChatAcknowledgement(timestamp=datetime.now(timezone.utc), acknowledged_msg_id=msg.msg_id))
     text = " ".join(c.text for c in msg.content if isinstance(c, TextContent)).strip()
     intent = parse_intent(text)
-    ctx.logger.info(f"{sender[:16]}… intent={intent} text={text[:80]!r}")
+    ctx.logger.info(f"{sender[:16]}… intent={intent} text={text[:300]!r}")
     if intent == "resurrect":
         await run_resurrection(ctx, sender)
     elif intent == "evidence":
