@@ -108,8 +108,9 @@ def counter_field(packets: tuple[Packet, ...], skip: set[int]) -> Finding | None
                 if not ok:
                     break
             if ok and len(starts) == 1:
-                return Finding("seq", f"u16 {endian}-endian at offset {off} is a per-direction counter starting at {starts.pop()}, +1 per frame",
-                               {"offset": off, "endian": endian, "start": min(starts) if starts else 1},
+                start = next(iter(starts))
+                return Finding("seq", f"u16 {endian}-endian at offset {off} is a per-direction counter starting at {start}, +1 per frame",
+                               {"offset": off, "endian": endian, "start": start},
                                tuple(p.idx for p in packets))
     return None
 
