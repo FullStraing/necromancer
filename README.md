@@ -69,7 +69,21 @@ Honest reading:
 * In the live pipeline SubQ also makes mistakes that the oracle catches: it picked power rule `constant_on` (p=0.83);
   the original client refuted it ("lamp state mismatch on power") and the journal records the refutation.
 
+## Results (envelope opened)
+`uv run python tools/reveal.py results/demo_run/spec.json` verifies every sealed file against `ENVELOPE.sha256`
+(committed at the start, before any agent run) and scores the recovered spec:
+
+* **30/30** ground-truth protocol fields recovered exactly (layout, CRC algorithm and coverage, all 10 message codes,
+  ACK/ERROR layouts, auth transform `reverse(nonce) XOR 0x5A`, brightness limit, default state).
+* **3/3** planted manual errors caught — each proven by packet numbers *and* by the original client rejecting the manual's version.
+* **12** oracle experiments; the length-field ambiguity resolved by experiment; SubQ's wrong power-rule guess refuted by the client.
+* Replacement server written by the generative model (standalone, stdlib only): **5/5** original-client conformance scripts.
+  In one ASI:One run it was accepted on the 3rd draft after repairs driven by the client's own error messages.
+* Demo artifacts: [`results/demo_run/`](results/demo_run/) (journal, spec, generated server, report).
+
 ## Fetch.ai agent (ASI:One)
+Agent address: `agent1qfnad6aftace8zyl0hh3xhzjh5m23hqlyl3mc9sgynz7644vttrc54n3csh` (Agentverse mailbox, Agent Chat Protocol).
+
 `agent/asi_agent.py` is a uAgent with the **Agent Chat Protocol** and **ASI:One Interactive Cards**:
 1. "My Lumio lamp is bricked" → **case-file card** (live check: the original app fails against the dead cloud)
 2. "Resurrect" → live progress messages (manual lies, experiments, conformance) → **results card**

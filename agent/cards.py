@@ -55,11 +55,13 @@ def result_card(report) -> dict:
     rows = [
         {"label": "Verdict", "value": "💡 Lamp resurrected" if synth and synth.passed == len(synth.results) else "⚠️ Partial"},
         {"label": "Original client vs new cloud", "value": f"{synth.passed}/{len(synth.results)} conformance scripts pass" if synth else "n/a"},
-        {"label": "Server author", "value": f"{synth.author} ({synth.rounds} repair round(s))" if synth else "n/a"},
+        {"label": "Server author", "value": (f"{synth.author}, accepted on draft {synth.rounds} (repaired from client errors)" if synth.rounds > 1
+                                           else f"{synth.author}, accepted on first draft" if synth.rounds == 1
+                                           else "deterministic fallback") if synth else "n/a"},
         {"label": "Journal", "value": f"✅ {c['verified']} verified · 🎲 {c['inferred']} inferred · ❌ {c['refuted']} refuted · ❓ {c['open']} open"},
         {"label": "Manual lies proven", "value": str(len(report.manual_lies))},
         {"label": "Oracle experiments", "value": str(len(report.experiments))},
-        {"label": "Models", "value": f"SubQ {report.models.get('subq')} · Meta {report.models.get('meta')}"},
+        {"label": "Models", "value": f"SubQ {report.models.get('subq')} · generator {report.models.get('meta')}"},
     ]
     return {
         "title": "Resurrection report",

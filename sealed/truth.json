@@ -1,0 +1,18 @@
+{
+  "spec": {
+    "prefix_hex": "4c4d02", "header_len": 8, "type_off": 3, "seq_off": 4, "seq_endian": "little", "seq_start": 1,
+    "len_off": 6, "len_endian": "little", "crc_algo": "CRC-16/CCITT-FALSE", "crc_start": 2, "crc_endian": "little",
+    "codes": {"hello": 1, "challenge": 129, "auth": 2, "auth_ok": 130, "get_status": 3, "status": 131,
+              "set_brightness": 4, "set_color": 5, "ack": 144, "error": 238},
+    "ack_seq_off": 0, "ack_type_off": 2, "err_seq_off": 1, "auth_reverse": true, "auth_xor": 90,
+    "status_fields": {"brightness": [1, 1], "color": [2, 3]}, "brightness_max": 100, "default_status_hex": "0164ffffff"
+  },
+  "power_rule": "brightness_nonzero",
+  "ablation": {
+    "bytes_0_1": "magic", "byte_2": "protocol_version", "byte_3": "message_type", "bytes_4_5": "sequence_counter",
+    "bytes_6_7": "payload_length", "last_2": "checksum", "length_endianness": "little",
+    "crc_coverage": "from_byte_2", "ack_code": "x90", "error_code": "xee", "auth_relation": "reversed_xor_5a",
+    "status_byte_0": "power", "status_byte_1": "brightness", "brightness_max": "v100", "seq_start": "one",
+    "ack_payload": "seq_then_type", "error_payload": "code_then_seq", "manual_reliable": "no"
+  }
+}

@@ -3,8 +3,6 @@ __pycache__/
 *.pyc
 .env
 .pytest_cache/
-# The original cloud server + client sources stay sealed until the reveal commit.
-sealed/
 runs/tmp/
 runs/
 runs_last.log
