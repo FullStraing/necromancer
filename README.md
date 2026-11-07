@@ -42,14 +42,32 @@ spec + journal ──► Meta writes server.py ──► original app runs confo
 | Model | Role |
 |---|---|
 | **SubQ Snap 1.1** (decision model, no text generation) | `noul` probability for each semantic hypothesis, `choice` for the power rule and for **which experiment to run next**, all with the full evidence dump (every packet in hex + manual) as `state` |
-| **Meta Muse Spark 1.3** | extracts manual claims, proposes hypotheses, **writes the replacement server** and repairs it from the client's error messages |
+| **Meta Muse Spark 1.3** or **ASI1** (Fetch.ai; used in the demo — same OpenAI-compatible client, `necromancer/llm.py`) | extracts manual claims, proposes hypotheses, **writes the replacement server** and repairs it from the client's error messages |
 | Deterministic code | CRC catalog brute force, length/counter/echo detectors, auth-transform search, range thresholds (`necromancer/detectors.py`) |
 
 Every model call has a deterministic fallback, so a failed tool call degrades the run instead of killing it.
 
-### SubQ long-context ablation
-`uv run python -m necromancer.ablation` asks SubQ the same 18 typed questions with the full capture, 25 %, 10 %, and
-the manual only, then scores them against the sealed answer key. Results: `results/ablation.json`.
+### SubQ ablation: what long context does and doesn't buy
+`uv run python -m necromancer.ablation` asks SubQ Snap 1.1 the same 18 typed questions under different evidence budgets
+and scores them against the sealed answer key (`results/ablation.json`). The (lying) manual is always in context.
+
+| SubQ `state` | packets | accuracy | mean p(true) | manual traps (4) | computed facts (4) |
+|---|---|---|---|---|---|
+| manual only | 0 | 56 % | 0.54 | **0/4** | 0/4 |
+| 10 % of sessions | 22 | 72 % | 0.69 | 2/4 | 1/4 |
+| 25 % of sessions | 62 | 67 % | 0.66 | 2/4 | 2/4 |
+| full capture | 246 | 61 % | 0.61 | 2/4 | 1/4 |
+| **full capture + verified detector facts** | 246 | **100 %** | **0.94** | **4/4** | **4/4** |
+
+Honest reading:
+* With **no traffic**, SubQ believes the manual (0/4 on planted errors). With traffic it starts overriding it.
+* On **raw hex**, more context does *not* raise accuracy: arithmetic relations (CRC coverage, XOR transform, range
+  threshold, counter start) are out of reach of reading alone, at any context size.
+* That is exactly the split Necromancer uses: deterministic detectors compute, SubQ **weighs** verified facts against the
+  manual and semantic hypotheses over everything at once. In that configuration it is 18/18. (Caveat: some detector facts
+  nearly state the answers, so this row measures evidence *integration* and resisting a lying manual, not raw discovery.)
+* In the live pipeline SubQ also makes mistakes that the oracle catches: it picked power rule `constant_on` (p=0.83);
+  the original client refuted it ("lamp state mismatch on power") and the journal records the refutation.
 
 ## Fetch.ai agent (ASI:One)
 `agent/asi_agent.py` is a uAgent with the **Agent Chat Protocol** and **ASI:One Interactive Cards**:
