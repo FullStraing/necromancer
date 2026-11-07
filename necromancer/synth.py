@@ -131,9 +131,9 @@ async def synthesize(spec: ProtocolSpec, journal: Journal, power_rule: str, out_
             results = await verify(path)
             passed = sum(1 for _, r in results if r.ok)
             if on_round:
-                await on_round(rnd, f"Meta draft {rnd}: original client passes {passed}/{len(results)} scripts")
+                await on_round(rnd, f"{meta.provider} draft {rnd}: original client passes {passed}/{len(results)} scripts")
             if passed == len(results):
-                return SynthResult(path, "meta", rnd, results)
+                return SynthResult(path, meta.provider, rnd, results)
             failures = "\n".join(f"- script {' '.join(sc)} -> client error: {r.error}" for sc, r in results if not r.ok)
             prompt = (build_prompt(spec, journal, power_rule) + "\n\nYour previous server:\n```python\n" + code
                       + "\n```\nThe ORIGINAL client failed on:\n" + failures + "\nFix it and return the full file.")

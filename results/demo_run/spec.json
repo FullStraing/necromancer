@@ -1,0 +1,54 @@
+{
+  "prefix_hex": "4c4d02",
+  "header_len": 8,
+  "type_off": 3,
+  "seq_off": 4,
+  "seq_endian": "little",
+  "seq_start": 1,
+  "len_off": 6,
+  "len_endian": "little",
+  "crc_algo": "CRC-16/CCITT-FALSE",
+  "crc_start": 2,
+  "crc_endian": "little",
+  "codes": {
+    "hello": 1,
+    "challenge": 129,
+    "auth": 2,
+    "auth_ok": 130,
+    "get_status": 3,
+    "status": 131,
+    "set_brightness": 4,
+    "set_color": 5,
+    "ack": 144,
+    "error": 238
+  },
+  "payload_sizes": {
+    "hello": 10,
+    "challenge": 4,
+    "auth": 4,
+    "auth_ok": 6,
+    "get_status": 0,
+    "status": 5,
+    "set_brightness": 1,
+    "set_color": 3,
+    "ack": 3,
+    "error": 3
+  },
+  "ack_seq_off": 0,
+  "ack_type_off": 2,
+  "err_seq_off": 1,
+  "auth_reverse": true,
+  "auth_xor": 90,
+  "status_fields": {
+    "brightness": [
+      1,
+      1
+    ],
+    "color": [
+      2,
+      3
+    ]
+  },
+  "brightness_max": 100,
+  "default_status_hex": "0164ffffff"
+}
