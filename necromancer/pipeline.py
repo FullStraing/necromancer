@@ -95,6 +95,10 @@ async def resurrect(emit: Emit = _noop, run_dir: Path | None = None, experiment_
         if e.status == "refuted":
             report.manual_lies.append(e)
 
+    verified = "\n".join(f"- VERIFIED: {e.claim}" for e in journal.entries() if e.status == "verified")
+    refuted = "\n".join(f"- REFUTED: {e.claim}" for e in journal.entries() if e.status == "refuted")
+    state = state + "\n\n=== DETERMINISTIC DETECTOR RESULTS ===\n" + verified + "\n" + refuted
+
     await emit("stage", "4/7 Semantic hypotheses (Meta proposes, SubQ scores over the full evidence)")
     hyps, src = await hy.propose(spec, packets, meta)
     await emit("info", f"{len(hyps)} hypotheses from {src}")
@@ -105,7 +109,8 @@ async def resurrect(emit: Emit = _noop, run_dir: Path | None = None, experiment_
                 await rec(e)
             power_rule, probs = await hy.choose_power_rule(state, subq)
             await rec(Entry(id="sem.power_rule", claim=f"SubQ: power rule = {power_rule}", status="inferred",
-                            confidence=round(max(probs.values(), default=0.5), 3), source="subq", detail={"probabilities": probs}))
+                            confidence=round(max(probs.values(), default=0.5), 3), source="subq",
+                            detail={"probabilities": probs, "choice": power_rule}))
         except ModelUnavailable as err:
             await emit("warn", f"SubQ unavailable ({err}); hypotheses stay open")
             for h in hyps:
@@ -128,11 +133,16 @@ async def resurrect(emit: Emit = _noop, run_dir: Path | None = None, experiment_
                 await rec(journal.get(f"det.alt.{alt.key}").model_copy(update={
                     "status": "refuted", "source": "oracle", "confidence": 1.0,
                     "claim": f"{alt.claim} — refuted: client accepted frames with seq ≥ 0x0101"}))
-        if exp.id == "power_rule_constant_on" and not result.ok and journal.get("sem.power_rule"):
+        if exp.id == "power_rule_constant_on" and not result.ok:
+            guess = journal.get("sem.power_rule")
+            if guess and guess.detail.get("choice") != "brightness_nonzero":
+                await rec(guess.model_copy(update={
+                    "status": "refuted", "source": "oracle",
+                    "claim": f"SubQ guessed power rule '{guess.detail.get('choice')}' (p={guess.confidence:.2f}) — "
+                             f"REFUTED by the original client (“{result.error}”)"}))
             power_rule = "brightness_nonzero"
-            await rec(journal.get("sem.power_rule").model_copy(update={
-                "status": "verified", "source": "oracle", "confidence": 1.0,
-                "claim": "power = (brightness > 0) — confirmed by the original client"}))
+            await rec(Entry(id="oracle.power_rule", claim="power = (brightness > 0) — confirmed by the original client",
+                            status="verified", confidence=1.0, source="oracle"))
 
     await emit("stage", "6/7 Writing the replacement cloud (Meta) and proving it with the original client")
 

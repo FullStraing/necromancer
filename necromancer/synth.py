@@ -122,7 +122,7 @@ async def synthesize(spec: ProtocolSpec, journal: Journal, power_rule: str, out_
         prompt = build_prompt(spec, journal, power_rule)
         for rnd in range(1, max_rounds + 1):
             try:
-                code = extract_code(await meta.complete(SYSTEM, prompt, max_tokens=6000))
+                code = extract_code(await meta.complete(SYSTEM, prompt, max_tokens=16000))
             except ModelUnavailable as e:
                 if on_round:
                     await on_round(rnd, f"Meta unavailable: {e}")

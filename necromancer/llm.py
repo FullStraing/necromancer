@@ -131,16 +131,19 @@ class Meta:
     async def complete(self, system: str, user: str, max_tokens: int = 4000) -> str:
         if not self.client:
             raise ModelUnavailable("no generative model key (MODEL_API_KEY or ASI1_API_KEY)")
-        try:
-            r = await self.client.chat.completions.create(
-                model=self.model, max_tokens=max_tokens,
-                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
-        except OpenAIError as e:
-            raise ModelUnavailable(f"{self.provider} API error: {e}") from e
-        text = r.choices[0].message.content or ""
-        if not text.strip():
-            raise ModelUnavailable(f"{self.provider} returned an empty completion")
-        return text
+        for attempt in range(3):
+            try:
+                r = await self.client.chat.completions.create(
+                    model=self.model, max_tokens=max_tokens,
+                    messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
+            except OpenAIError as e:
+                if attempt == 2:
+                    raise ModelUnavailable(f"{self.provider} API error: {e}") from e
+                continue
+            text = r.choices[0].message.content or ""
+            if text.strip():
+                return text
+        raise ModelUnavailable(f"{self.provider} returned an empty completion 3 times")
 
     async def complete_json(self, system: str, user: str, schema: type[BaseModel], max_tokens: int = 4000) -> BaseModel:
         prompt = user + "\n\nReturn ONLY one JSON object matching this JSON schema, no prose:\n" + json.dumps(schema.model_json_schema())

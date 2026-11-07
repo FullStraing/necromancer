@@ -67,12 +67,13 @@ def interpret(exp: Experiment, r: OracleResult) -> Entry:
 async def pick_next(remaining: list[Experiment], state: str, journal_text: str, subq: SubQ) -> tuple[Experiment, dict]:
     if len(remaining) == 1 or not subq.available:
         return remaining[0], {}
-    q = ChoiceQ(instructions=("We are reconstructing a dead cloud server. Current hypothesis journal:\n" + journal_text
-                              + "\nWhich client-oracle experiment should run NEXT to most reduce uncertainty about what "
+    q = ChoiceQ(instructions=("We are reconstructing a dead cloud server (see the hypothesis journal in the state). "
+                              "Which client-oracle experiment should run NEXT to most reduce uncertainty about what "
                               "the replacement server must do? Prefer resolving ambiguous or contradicted facts first."),
                 options={e.id: e.question for e in remaining})
     try:
-        ans = (await subq.ask(state, {"next_experiment": q}))["next_experiment"]
+        full_state = state + "\n\n=== CURRENT HYPOTHESIS JOURNAL ===\n" + journal_text
+        ans = (await subq.ask(full_state, {"next_experiment": q}))["next_experiment"]
     except ModelUnavailable:
         return remaining[0], {}
     chosen = next((e for e in remaining if e.id == ans.choice), remaining[0])
