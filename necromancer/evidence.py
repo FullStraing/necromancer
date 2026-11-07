@@ -64,6 +64,7 @@ def subsample(packets: tuple[Packet, ...], fraction: float) -> tuple[Packet, ...
 
 def render_state(packets: tuple[Packet, ...], manual: str) -> str:
     """Plain-text evidence dump handed to SubQ as `state` (all packets, hex, numbered)."""
-    rows = [f"#{p.idx} s{p.session} {'APP->CLOUD' if p.dir == 'c2s' else 'CLOUD->APP'} {p.data.hex()}" for p in packets]
+    rows = [f"#{p.idx} s{p.session} {'APP->CLOUD' if p.dir == 'c2s' else 'CLOUD->APP'} len={len(p.data)} | {p.data.hex(' ')}"
+            for p in packets]
     return ("=== RECORDED TRAFFIC (packet#, session, direction, raw hex) ===\n" + "\n".join(rows)
             + "\n\n=== RECOVERED VENDOR MANUAL (may contain errors) ===\n" + manual)

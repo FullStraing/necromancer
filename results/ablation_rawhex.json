@@ -1,0 +1,395 @@
+{
+  "full (28 sessions)": {
+    "packets": 246,
+    "accuracy": 0.611,
+    "mean_p_true": 0.602,
+    "answers": {
+      "bytes_0_1": {
+        "choice": "magic",
+        "p_true": 0.96,
+        "correct": true
+      },
+      "byte_2": {
+        "choice": "protocol_version",
+        "p_true": 0.918,
+        "correct": true
+      },
+      "byte_3": {
+        "choice": "protocol_version",
+        "p_true": 0.447,
+        "correct": false
+      },
+      "bytes_4_5": {
+        "choice": "sequence_counter",
+        "p_true": 0.562,
+        "correct": true
+      },
+      "bytes_6_7": {
+        "choice": "payload_length",
+        "p_true": 0.528,
+        "correct": true
+      },
+      "last_2": {
+        "choice": "checksum",
+        "p_true": 0.964,
+        "correct": true
+      },
+      "length_endianness": {
+        "choice": "little",
+        "p_true": 0.763,
+        "correct": true
+      },
+      "crc_coverage": {
+        "choice": "entire_frame",
+        "p_true": 0.273,
+        "correct": false
+      },
+      "ack_code": {
+        "choice": "x90",
+        "p_true": 0.992,
+        "correct": true
+      },
+      "error_code": {
+        "choice": "xee",
+        "p_true": 0.871,
+        "correct": true
+      },
+      "auth_relation": {
+        "choice": "unrelated",
+        "p_true": 0.053,
+        "correct": false
+      },
+      "status_byte_0": {
+        "choice": "brightness",
+        "p_true": 0.295,
+        "correct": false
+      },
+      "status_byte_1": {
+        "choice": "brightness",
+        "p_true": 0.569,
+        "correct": true
+      },
+      "brightness_max": {
+        "choice": "v255",
+        "p_true": 0.383,
+        "correct": false
+      },
+      "seq_start": {
+        "choice": "zero",
+        "p_true": 0.327,
+        "correct": false
+      },
+      "ack_payload": {
+        "choice": "type_then_seq",
+        "p_true": 0.199,
+        "correct": false
+      },
+      "error_payload": {
+        "choice": "code_then_seq",
+        "p_true": 0.737,
+        "correct": true
+      },
+      "manual_reliable": {
+        "choice": "no",
+        "p_true": 0.994,
+        "correct": true
+      }
+    }
+  },
+  "25%": {
+    "packets": 62,
+    "accuracy": 0.611,
+    "mean_p_true": 0.627,
+    "answers": {
+      "bytes_0_1": {
+        "choice": "magic",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "byte_2": {
+        "choice": "protocol_version",
+        "p_true": 0.997,
+        "correct": true
+      },
+      "byte_3": {
+        "choice": "message_type",
+        "p_true": 0.995,
+        "correct": true
+      },
+      "bytes_4_5": {
+        "choice": "sequence_counter",
+        "p_true": 0.992,
+        "correct": true
+      },
+      "bytes_6_7": {
+        "choice": "payload_length",
+        "p_true": 0.783,
+        "correct": true
+      },
+      "last_2": {
+        "choice": "checksum",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "length_endianness": {
+        "choice": "little",
+        "p_true": 0.791,
+        "correct": true
+      },
+      "crc_coverage": {
+        "choice": "entire_frame",
+        "p_true": 0.055,
+        "correct": false
+      },
+      "ack_code": {
+        "choice": "x90",
+        "p_true": 0.989,
+        "correct": true
+      },
+      "error_code": {
+        "choice": "x90",
+        "p_true": 0.006,
+        "correct": false
+      },
+      "auth_relation": {
+        "choice": "unrelated",
+        "p_true": 0.079,
+        "correct": false
+      },
+      "status_byte_0": {
+        "choice": "power",
+        "p_true": 0.847,
+        "correct": true
+      },
+      "status_byte_1": {
+        "choice": "brightness",
+        "p_true": 0.829,
+        "correct": true
+      },
+      "brightness_max": {
+        "choice": "v255",
+        "p_true": 0.404,
+        "correct": false
+      },
+      "seq_start": {
+        "choice": "zero",
+        "p_true": 0.441,
+        "correct": false
+      },
+      "ack_payload": {
+        "choice": "type_then_seq",
+        "p_true": 0.004,
+        "correct": false
+      },
+      "error_payload": {
+        "choice": "seq_then_code",
+        "p_true": 0.09,
+        "correct": false
+      },
+      "manual_reliable": {
+        "choice": "no",
+        "p_true": 0.978,
+        "correct": true
+      }
+    }
+  },
+  "10%": {
+    "packets": 22,
+    "accuracy": 0.667,
+    "mean_p_true": 0.67,
+    "answers": {
+      "bytes_0_1": {
+        "choice": "magic",
+        "p_true": 0.998,
+        "correct": true
+      },
+      "byte_2": {
+        "choice": "protocol_version",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "byte_3": {
+        "choice": "message_type",
+        "p_true": 0.998,
+        "correct": true
+      },
+      "bytes_4_5": {
+        "choice": "sequence_counter",
+        "p_true": 0.996,
+        "correct": true
+      },
+      "bytes_6_7": {
+        "choice": "payload_length",
+        "p_true": 0.967,
+        "correct": true
+      },
+      "last_2": {
+        "choice": "checksum",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "length_endianness": {
+        "choice": "little",
+        "p_true": 0.775,
+        "correct": true
+      },
+      "crc_coverage": {
+        "choice": "entire_frame",
+        "p_true": 0.028,
+        "correct": false
+      },
+      "ack_code": {
+        "choice": "x90",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "error_code": {
+        "choice": "x90",
+        "p_true": 0.018,
+        "correct": false
+      },
+      "auth_relation": {
+        "choice": "unrelated",
+        "p_true": 0.054,
+        "correct": false
+      },
+      "status_byte_0": {
+        "choice": "brightness",
+        "p_true": 0.173,
+        "correct": false
+      },
+      "status_byte_1": {
+        "choice": "brightness",
+        "p_true": 0.854,
+        "correct": true
+      },
+      "brightness_max": {
+        "choice": "v255",
+        "p_true": 0.278,
+        "correct": false
+      },
+      "seq_start": {
+        "choice": "one",
+        "p_true": 0.856,
+        "correct": true
+      },
+      "ack_payload": {
+        "choice": "seq_then_type",
+        "p_true": 0.851,
+        "correct": true
+      },
+      "error_payload": {
+        "choice": "seq_then_code",
+        "p_true": 0.237,
+        "correct": false
+      },
+      "manual_reliable": {
+        "choice": "no",
+        "p_true": 0.984,
+        "correct": true
+      }
+    }
+  },
+  "manual only": {
+    "packets": 0,
+    "accuracy": 0.556,
+    "mean_p_true": 0.538,
+    "answers": {
+      "bytes_0_1": {
+        "choice": "magic",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "byte_2": {
+        "choice": "protocol_version",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "byte_3": {
+        "choice": "message_type",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "bytes_4_5": {
+        "choice": "sequence_counter",
+        "p_true": 0.999,
+        "correct": true
+      },
+      "bytes_6_7": {
+        "choice": "sequence_counter",
+        "p_true": 0.326,
+        "correct": false
+      },
+      "last_2": {
+        "choice": "checksum",
+        "p_true": 1.0,
+        "correct": true
+      },
+      "length_endianness": {
+        "choice": "big",
+        "p_true": 0.001,
+        "correct": false
+      },
+      "crc_coverage": {
+        "choice": "entire_frame",
+        "p_true": 0.0,
+        "correct": false
+      },
+      "ack_code": {
+        "choice": "x80",
+        "p_true": 0.002,
+        "correct": false
+      },
+      "error_code": {
+        "choice": "xee",
+        "p_true": 0.586,
+        "correct": true
+      },
+      "auth_relation": {
+        "choice": "unrelated",
+        "p_true": 0.206,
+        "correct": false
+      },
+      "status_byte_0": {
+        "choice": "power",
+        "p_true": 0.929,
+        "correct": true
+      },
+      "status_byte_1": {
+        "choice": "brightness",
+        "p_true": 0.761,
+        "correct": true
+      },
+      "brightness_max": {
+        "choice": "v255",
+        "p_true": 0.022,
+        "correct": false
+      },
+      "seq_start": {
+        "choice": "zero",
+        "p_true": 0.077,
+        "correct": false
+      },
+      "ack_payload": {
+        "choice": "seq_then_type",
+        "p_true": 0.963,
+        "correct": true
+      },
+      "error_payload": {
+        "choice": "code_then_seq",
+        "p_true": 0.799,
+        "correct": true
+      },
+      "manual_reliable": {
+        "choice": "yes",
+        "p_true": 0.008,
+        "correct": false
+      }
+    }
+  },
+  "_meta": {
+    "model": "subq-snap-1.1",
+    "input_tokens": 19822,
+    "questions": 18
+  }
+}

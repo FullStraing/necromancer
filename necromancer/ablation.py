@@ -58,6 +58,19 @@ QUESTIONS: dict[str, ChoiceQ] = {
 }
 
 FRACTIONS = {"full (28 sessions)": 1.0, "25%": 0.25, "10%": 0.1, "manual only": 0.0}
+MANUAL_TRAPS = ("length_endianness", "crc_coverage", "ack_code", "manual_reliable")   # where the manual lies
+COMPUTED = ("crc_coverage", "auth_relation", "brightness_max", "seq_start")            # need arithmetic over bytes
+
+
+def hybrid_state(packets, manual) -> str:
+    """Full evidence + the verified journal from deterministic detectors (how the pipeline actually uses SubQ)."""
+    from .spec import derive
+    facts = "\n".join(f"- VERIFIED (holds on every packet): {f.claim}" for f in derive(packets).findings)
+    return render_state(packets, manual) + "\n\n=== DETERMINISTIC DETECTOR RESULTS ===\n" + facts
+
+
+def _subset(rows: dict, keys) -> str:
+    return f"{sum(rows[k]['correct'] for k in keys)}/{len(keys)}"
 
 
 async def run_ablation(truth_path: Path = ROOT / "sealed" / "truth.json", out: Path = ROOT / "results" / "ablation.json") -> dict:
@@ -65,16 +78,19 @@ async def run_ablation(truth_path: Path = ROOT / "sealed" / "truth.json", out: P
     truth = json.loads(truth_path.read_text())["ablation"]
     packets, manual = load_traffic(), load_manual()
     results = {}
-    for label, frac in FRACTIONS.items():
+    configs = [(label, frac, False) for label, frac in FRACTIONS.items()] + [("full + detector facts", 1.0, True)]
+    for label, frac, hybrid in configs:
         pk = subsample(packets, frac) if frac > 0 else ()
-        state = render_state(pk, manual)
+        state = hybrid_state(pk, manual) if hybrid else render_state(pk, manual)
         answers = await subq.ask(state, QUESTIONS)
         rows = {q: {"choice": a.choice, "p_true": round((a.probabilities or {}).get(truth[q], 0.0), 3), "correct": a.choice == truth[q]}
                 for q, a in answers.items()}
         acc = sum(r["correct"] for r in rows.values()) / len(rows)
         results[label] = {"packets": len(pk), "accuracy": round(acc, 3),
-                          "mean_p_true": round(sum(r["p_true"] for r in rows.values()) / len(rows), 3), "answers": rows}
-        print(f"{label:>20}: {len(pk):4d} packets  accuracy {acc:.0%}  mean p(true) {results[label]['mean_p_true']:.2f}")
+                          "mean_p_true": round(sum(r["p_true"] for r in rows.values()) / len(rows), 3),
+                          "manual_traps": _subset(rows, MANUAL_TRAPS), "computed": _subset(rows, COMPUTED), "answers": rows}
+        print(f"{label:>22}: {len(pk):4d} pkts  acc {acc:.0%}  p(true) {results[label]['mean_p_true']:.2f}  "
+              f"manual-traps {results[label]['manual_traps']}  computed {results[label]['computed']}")
     results["_meta"] = {"model": subq.model, "input_tokens": subq.input_tokens, "questions": len(QUESTIONS)}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(results, indent=2))

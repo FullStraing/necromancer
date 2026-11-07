@@ -103,13 +103,26 @@ def _parse_answer(raw: dict) -> SubQAnswer:
                       probabilities=raw.get("probabilities"), confidence=raw.get("confidence"))
 
 
-# ---------------------------------------------------------------- Meta
+# ---------------------------------------------------------------- Generative model (Meta Muse Spark, or ASI1)
+PROVIDERS = (
+    # (provider, key env, base-url env, default base url, model env, default model)
+    ("meta", "MODEL_API_KEY", "META_BASE_URL", "https://api.meta.ai/v1", "META_MODEL", "muse-spark-1.3"),
+    ("asi1", "ASI1_API_KEY", "ASI1_BASE_URL", "https://api.asi1.ai/v1", "ASI1_MODEL", "asi1"),
+)
+
+
 class Meta:
+    """OpenAI-compatible generative client. Prefers Meta Muse Spark; falls back to ASI1 (Fetch.ai) when only that key exists."""
+
     def __init__(self, api_key: str | None = None, model: str | None = None, base_url: str | None = None):
-        key = api_key or os.getenv("MODEL_API_KEY", "")
-        self.model = model or os.getenv("META_MODEL", "muse-spark-1.3")
-        self.client = AsyncOpenAI(api_key=key, base_url=base_url or os.getenv("META_BASE_URL", "https://api.meta.ai/v1"),
-                                  timeout=180, max_retries=2) if key else None
+        chosen = next(((p, os.getenv(k, "")) for p in PROVIDERS for k in [p[1]] if api_key or os.getenv(k, "")), None)
+        self.provider, self.model, self.client = "none", model or "unavailable", None
+        if chosen:
+            (name, _, url_env, url_default, model_env, model_default), env_key = chosen
+            self.provider = name
+            self.model = model or os.getenv(model_env, model_default)
+            self.client = AsyncOpenAI(api_key=api_key or env_key, base_url=base_url or os.getenv(url_env, url_default),
+                                      timeout=180, max_retries=2)
 
     @property
     def available(self) -> bool:
@@ -117,16 +130,16 @@ class Meta:
 
     async def complete(self, system: str, user: str, max_tokens: int = 4000) -> str:
         if not self.client:
-            raise ModelUnavailable("MODEL_API_KEY not configured")
+            raise ModelUnavailable("no generative model key (MODEL_API_KEY or ASI1_API_KEY)")
         try:
             r = await self.client.chat.completions.create(
                 model=self.model, max_tokens=max_tokens,
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
         except OpenAIError as e:
-            raise ModelUnavailable(f"Meta API error: {e}") from e
+            raise ModelUnavailable(f"{self.provider} API error: {e}") from e
         text = r.choices[0].message.content or ""
         if not text.strip():
-            raise ModelUnavailable("Meta returned an empty completion")
+            raise ModelUnavailable(f"{self.provider} returned an empty completion")
         return text
 
     async def complete_json(self, system: str, user: str, schema: type[BaseModel], max_tokens: int = 4000) -> BaseModel:
